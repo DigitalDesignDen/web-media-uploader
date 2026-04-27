@@ -34,6 +34,7 @@
 
     <h2 style="font-family: monospace; text-align:center">Sorted Media</h2>
 
+<!-- Display uploaded images -->
 <?php if (!empty($selectedImages)): ?>
     <div style="max-width: 600px; margin: 0 auto 20px auto; padding: 12px; border: 1px solid #8700bd; background: #f5effc;">
         <p style="font-family: monospace; margin-bottom: 8px;">Selected files submitted:</p>
@@ -41,6 +42,8 @@
         <p style="font-family: monospace; font-weight: normal;"><?= htmlspecialchars($selectedImage, ENT_QUOTES, 'UTF-8') ?></p>
 <?php endforeach; ?>
     </div>
+
+<!-- Upload the images to the mounted NAS directiry if it is accessible -->
 <?php
     if (is_dir('/mnt/nas/2026/test')) {
         foreach ($selectedImages as $selectedImage) {
