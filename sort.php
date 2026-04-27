@@ -4,12 +4,17 @@
     $count = 0;
     $exp = "/IMG_\d{8}/i";
     $fileInfo = array();
+    $noDateFiles = array();
     $selectedImages = $_POST['selected_images'] ?? array();
 
     foreach($files as $img) {
         if ( preg_match($exp, $img, $matches) ) { 
             $timestamp = mktime(0,0,0,(int)substr($matches[0], 8, 2), (int)substr($matches[0], 10, 2), (int)substr($matches[0], 4, 4));
             $fileInfo[$img] = (int)$timestamp;
+        } else {
+            # prevent the "upper directories dots" to be counted as files
+            if ($img != '.' && $img != '..')
+                array_push($noDateFiles, $img);
         }
     }
 
@@ -93,6 +98,37 @@
             }
         }
 
+?>
+
+<?php
+# now iterate over the files with no Date found in the filename
+if (!empty($noDateFiles))
+    {
+        $count_noDate = 0;
+
+        echo "\t<tr>\n";
+            echo "\t\t<th colspan='3' style='border: 2px none #8700bd; padding: 2px;'>\n";
+            echo "\t\t<p style='text-align: left; font-weight: bold; font-family: monospace;'>No Date found</p>\n";
+            echo "\t\t</th>\n";
+        echo "\t</tr>\n";
+
+        foreach ($noDateFiles as $ndFile) {
+            if ($count_noDate++ % 3 === 0) {
+                echo "\t<tr>\n";
+            }
+                $isSelected = in_array($ndFile, $selectedImages, true);
+                $cellBackground = $isSelected ? 'lightgray' : 'transparent';
+                $imageWidth = $isSelected ? '120px' : '115px';
+                echo "\t\t" . '<td style="border: 2px solid #8700bd; padding: 2px; background: ' . $cellBackground . ';" onclick="toggleSelection(this)">' . "\n";
+                echo "\t\t\t" . '<input type="checkbox" name="selected_images[]" value="' . htmlspecialchars($ndFile, ENT_QUOTES, 'UTF-8') . '"' . ($isSelected ? ' checked' : '') . ' hidden>' . "\n";
+                echo "\t\t\t" . '<img src="uploads/' . rawurlencode($ndFile) . '" style="max-width: ' . $imageWidth . '; display: block; margin-bottom: 1rem;">' . "\n";
+                echo "\t\t\t<p>" . $ndFile . "</p>\n";
+                echo "\t\t</td>\n";
+            if ($count_noDate % 3 === 0 || $count_noDate === count($noDateFiles)) {
+                echo "\t</tr>\n";
+            }
+        } 
+    }
 ?>
     </table>
     <div style="max-width: 600px; margin: 20px auto 0 auto;">
