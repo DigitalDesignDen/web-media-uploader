@@ -148,8 +148,3 @@ if (!empty($noDateFiles))
     </script>
 </body>
 </html>
-
-<?php
-
-
-?>
